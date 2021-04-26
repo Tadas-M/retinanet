@@ -314,10 +314,9 @@ class OpenImagesDataset(Dataset):
         except ValueError as e:
             raise(ValueError('invalid CSV class file: {}: {}'.format(self.root_dir + "/" + self.class_file_path.lower(), e)))
 
-        self.labels = []
+        self.labels = {}
         for key, value in self.classes.items():
-            #self.labels[value] = key
-            self.labels.append(key)
+            self.labels[value] = key
 
         # txt with class_name, x1, y1, x2, y2
         try:

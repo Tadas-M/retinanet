@@ -1,8 +1,6 @@
 from __future__ import print_function
 
 import numpy as np
-import json
-import os
 import matplotlib.pyplot as plt
 import torch
 
@@ -168,10 +166,7 @@ def evaluate(
         A dict mapping class names to mAP scores.
     """
 
-
-
     # gather all detections and annotations
-
     all_detections     = _get_detections(generator, retinanet, score_threshold=score_threshold, max_detections=max_detections, save_path=save_path)
     all_annotations    = _get_annotations(generator)
 
@@ -182,7 +177,6 @@ def evaluate(
     print(f"length of generator: {len(generator)}")
 
     for label in range(generator.num_classes()):
-        print(label)
         false_positives = np.zeros((0,))
         true_positives  = np.zeros((0,))
         scores          = np.zeros((0,))
@@ -236,13 +230,12 @@ def evaluate(
         average_precision = _compute_ap(recall, precision)
         average_precisions[label] = average_precision, num_annotations
 
-
     print('\nmAP:')
     for label in range(generator.num_classes()):
         label_name = generator.label_to_name(label)
-        print('{}: {}'.format(label_name, average_precisions[label][0]))
-        print("Precision: ", precision[-1])
-        print("Recall: ", recall[-1])
+        print(":<12".format(label_name), average_precisions[label][0])
+        print(":<12".format("Precision: "), precision[-1])
+        print(":<12".format("Recall: "), recall[-1])
         
         if save_path != None:
             plt.plot(recall, precision)

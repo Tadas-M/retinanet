@@ -170,9 +170,6 @@ def evaluate(
     all_detections     = _get_detections(generator, retinanet, score_threshold=score_threshold, max_detections=max_detections, save_path=save_path)
     all_annotations    = _get_annotations(generator)
 
-    print(all_detections)
-    print(all_annotations)
-    
     average_precisions = {}
 
     print(f"num of classes: {generator.num_classes()}")
@@ -188,6 +185,7 @@ def evaluate(
             detections           = all_detections[i][label]
             annotations          = all_annotations[i][label]
             num_annotations     += annotations.shape[0]
+            print("num of annotation: ", num_annotations)
             detected_annotations = []
 
             for d in detections:

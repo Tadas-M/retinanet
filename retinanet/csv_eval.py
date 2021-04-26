@@ -233,9 +233,9 @@ def evaluate(
     print('\nmAP:')
     for label in range(generator.num_classes()):
         label_name = generator.label_to_name(label)
-        print(":<12".format(label_name), average_precisions[label][0])
-        print(":<12".format("Precision: "), precision[-1])
-        print(":<12".format("Recall: "), recall[-1])
+        print("{:<12}".format(label_name), average_precisions[label][0])
+        print("{:<12}".format("Precision: "), precision[-1])
+        print("{:<12}".format("Recall: "), recall[-1])
         
         if save_path != None:
             plt.plot(recall, precision)

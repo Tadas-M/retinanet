@@ -185,7 +185,7 @@ def evaluate(
             detections           = all_detections[i][label]
             annotations          = all_annotations[i][label]
             num_annotations     += annotations.shape[0]
-            print("num of annotation: ", num_annotations)
+            print(f"{label} {i} Annotations: ", annotations)
             detected_annotations = []
 
             for d in detections:

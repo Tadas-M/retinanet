@@ -2,8 +2,7 @@ import argparse
 import torch
 from torchvision import transforms
 
-from retinanet import model
-from retinanet.dataloader import CSVDataset, OpenImagesDataset, Resizer, Normalizer
+from retinanet.dataloader import OpenImagesDataset, Resizer, Normalizer
 from retinanet import csv_eval
 
 assert torch.__version__.split('.')[0] == '1'

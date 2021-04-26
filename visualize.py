@@ -1,22 +1,14 @@
 import numpy as np
-import torchvision
-import time
-import os
-import copy
-import pdb
 import time
 import argparse
-
-import sys
 import cv2
-
 import torch
+
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, models, transforms
 
-from retinanet.dataloader import CocoDataset, CSVDataset, collater, Resizer, AspectRatioBasedSampler, Augmenter, \
-	UnNormalizer, Normalizer
-
+from retinanet.dataloader import CocoDataset, CSVDataset, OpenImagesDataset, collater, Resizer, \
+	AspectRatioBasedSampler, Augmenter, UnNormalizer, Normalizer
 
 assert torch.__version__.split('.')[0] == '1'
 
@@ -31,14 +23,21 @@ def main(args=None):
 	parser.add_argument('--csv_classes', help='Path to file containing class list (see readme)')
 	parser.add_argument('--csv_val', help='Path to file containing validation annotations (optional, see readme)')
 
+	parser.add_argument('--oi_path', help='Path to OpenImages directory')
+	parser.add_argument('--oi_classes', help='List of classes')
+
 	parser.add_argument('--model', help='Path to model (.pt) file.')
 
 	parser = parser.parse_args(args)
 
-	if parser.dataset == 'coco':
-		dataset_val = CocoDataset(parser.coco_path, set_name='train2017', transform=transforms.Compose([Normalizer(), Resizer()]))
-	elif parser.dataset == 'csv':
-		dataset_val = CSVDataset(train_file=parser.csv_train, class_list=parser.csv_classes, transform=transforms.Compose([Normalizer(), Resizer()]))
+	if parser.dataset == 'csv':
+		dataset_val = CSVDataset(train_file=parser.csv_train, class_list=parser.csv_classes,
+								 transform=transforms.Compose([Normalizer(), Resizer()]))
+	elif parser.dataset == 'openImages':
+		dataset_val = OpenImagesDataset(root_dir=parser.oi_path, data_dir="test",
+										class_file_path="metadata/class-descriptions-boxable.csv",
+										class_list=parser.oi_classes,
+										transform=transforms.Compose([Normalizer(), Resizer()]))
 	else:
 		raise ValueError('Dataset type not understood (must be csv or coco), exiting.')
 
@@ -76,12 +75,12 @@ def main(args=None):
 				scores, classification, transformed_anchors = retinanet(data['img'].cuda().float())
 			else:
 				scores, classification, transformed_anchors = retinanet(data['img'].float())
-			print('Elapsed time: {}'.format(time.time()-st))
-			idxs = np.where(scores.cpu()>0.5)
+			print('Elapsed time: {}'.format(time.time() - st))
+			idxs = np.where(scores.cpu() > 0.5)
 			img = np.array(255 * unnormalize(data['img'][0, :, :, :])).copy()
 
-			img[img<0] = 0
-			img[img>255] = 255
+			img[img < 0] = 0
+			img[img > 255] = 255
 
 			img = np.transpose(img, (1, 2, 0))
 
@@ -103,6 +102,5 @@ def main(args=None):
 			cv2.waitKey(0)
 
 
-
 if __name__ == '__main__':
- main()
+	main()

@@ -309,10 +309,10 @@ class OpenImagesDataset(Dataset):
 
         # parse the provided class file
         try:
-            with open_csv(self.root_dir + "/" + self.class_file_path) as file:
+            with open_csv(self.root_dir + "/" + self.class_file_path.lower()) as file:
                 self.classes = self.load_classes(csv.reader(file, delimiter=','))
         except ValueError as e:
-            raise(ValueError('invalid CSV class file: {}: {}'.format(self.root_dir + "/" + self.class_file_path, e)))
+            raise(ValueError('invalid CSV class file: {}: {}'.format(self.root_dir + "/" + self.class_file_path.lower(), e)))
 
         self.labels = []
         for key, value in self.classes.items():
@@ -349,7 +349,7 @@ class OpenImagesDataset(Dataset):
     def _read_labels(self):
         result = {}
         for img_class in self.class_list:
-            for img_labels_file in os.scandir(f"{self.root_dir}/{self.data_dir}/{img_class}/labels"):
+            for img_labels_file in os.scandir(f"{self.root_dir}/{self.data_dir}/{img_class.lower()}/labels"):
                 if str(img_labels_file.name).endswith(".txt"):
                     with open(img_labels_file.path, 'r') as f:
                         lines = f.readlines()
@@ -391,7 +391,7 @@ class OpenImagesDataset(Dataset):
                                 'x1': x1, 'x2': x2,
                                 'y1': y1, 'y2': y2,
                                 'class': class_name.capitalize(),
-                                'path': f"{self.root_dir}/{self.data_dir}/{img_class}/{img_file_name}"
+                                'path': f"{self.root_dir}/{self.data_dir}/{img_class.lower()}/{img_file_name}"
                             })
         return result
 
@@ -414,10 +414,6 @@ class OpenImagesDataset(Dataset):
 
             if (x2 - x1) < 1 or (y2 - y1) < 1:
                 continue
-
-            #dt = np.dtype("f8, f8, f8, f8, U9")
-            #annotation = np.array([x1, y1, x2, y2, self.name_to_label(a['class'])], dtype=dt)
-            #annotation.shape = (1, 5)
 
             annotation = np.empty((1, 5))
             annotation[0, 0] = x1

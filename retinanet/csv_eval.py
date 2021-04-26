@@ -167,6 +167,9 @@ def evaluate(
     """
 
     # gather all detections and annotations
+    recall = 0
+    precision = 0
+
     all_detections     = _get_detections(generator, retinanet, score_threshold=score_threshold, max_detections=max_detections, save_path=save_path)
     all_annotations    = _get_annotations(generator)
 
@@ -185,8 +188,6 @@ def evaluate(
             detections           = all_detections[i][label]
             annotations          = all_annotations[i][label]
             num_annotations     += annotations.shape[0]
-            if len(annotations) > 0:
-                print(f"{label} {i} Annotations: ", annotations)
             detected_annotations = []
 
             for d in detections:
@@ -235,9 +236,6 @@ def evaluate(
     for label in range(generator.num_classes()):
         label_name = generator.label_to_name(label)
         print("{:<12}".format(label_name), average_precisions[label][0])
-        print("{:<12}".format("Precision: "), precision[-1])
-        print("{:<12}".format("Recall: "), recall[-1])
-        print("---------------------------")
 
         if save_path is not None:
             plt.plot(recall, precision)
@@ -251,6 +249,10 @@ def evaluate(
 
             # function to show the plot
             plt.savefig(save_path+'/'+label_name+'_precision_recall.jpg')
+
+    print("{:<12}".format("Precision: "), precision[-1])
+    print("{:<12}".format("Recall: "), recall[-1])
+    print("---------------------------")
 
     return average_precisions
 

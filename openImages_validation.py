@@ -26,7 +26,7 @@ def main(args=None):
                                     transform=transforms.Compose([Normalizer(), Resizer()]))
 
     # Create the model
-    retinanet=torch.load(parser.model_path)
+    retinanet = torch.load(parser.model_path)
 
     use_gpu = True
 

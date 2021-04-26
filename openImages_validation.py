@@ -26,7 +26,7 @@ def main(args=None):
                                     transform=transforms.Compose([Normalizer(), Resizer()]))
 
     # Create the model
-    retinanet = torch.load(parser.model_path)
+    retinanet = model.resnet50(num_classes=dataset_val.num_classes(), pretrained=True)
 
     use_gpu = True
 
@@ -35,6 +35,7 @@ def main(args=None):
             retinanet = retinanet.cuda()
 
     if torch.cuda.is_available():
+        retinanet.load_state_dict(torch.load(parser.model_path).module.state_dict())
         retinanet = torch.nn.DataParallel(retinanet).cuda()
     else:
         retinanet.load_state_dict(torch.load(parser.model_path))

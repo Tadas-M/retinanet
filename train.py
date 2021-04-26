@@ -182,13 +182,11 @@ def main(args=None):
             print('Evaluating dataset')
 
             coco_eval.evaluate_coco(dataset_val, retinanet)
-
         elif parser.dataset == 'csv' and parser.csv_val is not None:
 
             print('Evaluating dataset')
 
             mAP = csv_eval.evaluate(dataset_val, retinanet)
-
         elif parser.dataset == 'openImages':
 
             print('Evaluating dataset')

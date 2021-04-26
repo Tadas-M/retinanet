@@ -321,7 +321,6 @@ class OpenImagesDataset(Dataset):
         # txt with class_name, x1, y1, x2, y2
         try:
             self.image_data = self._read_labels()
-            print(self.image_data)
         except ValueError as e:
             raise(ValueError('invalid OpenImages labels file: {}: {}'.format(self.root_dir, e)))
         self.image_names = list(self.image_data.keys())

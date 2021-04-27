@@ -83,7 +83,7 @@ def main(args=None):
                                           transform=transforms.Compose([Normalizer(), Augmenter(), Resizer()]))
 
         dataset_val = OpenImagesDataset(root_dir=parser.oi_path,
-                                        data_dir="test",
+                                        data_dir="validation",
                                         class_file_path="metadata/class-descriptions-boxable.csv",
                                         class_list=parser.oi_classes,
                                         transform=transforms.Compose([Normalizer(), Resizer()]))
@@ -186,13 +186,13 @@ def main(args=None):
         if parser.dataset == 'coco':
 
             print('Evaluating dataset')
-
             coco_eval.evaluate_coco(dataset_val, retinanet)
+
         elif parser.dataset == 'csv' and parser.csv_val is not None:
 
             print('Evaluating dataset')
-
             mAP = csv_eval.evaluate(dataset_val, retinanet)
+
         elif parser.dataset == 'openImages':
 
             print('Evaluating dataset')

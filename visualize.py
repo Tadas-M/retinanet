@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, models, transforms
 
-from retinanet.dataloader import CocoDataset, CSVDataset, OpenImagesDataset, collater, Resizer, \
+from retinanet.dataloader import CSVDataset, OpenImagesDataset, collater, Resizer, \
 	AspectRatioBasedSampler, Augmenter, UnNormalizer, Normalizer
 
 assert torch.__version__.split('.')[0] == '1'
@@ -18,10 +18,7 @@ print('CUDA available: {}'.format(torch.cuda.is_available()))
 def main(args=None):
 	parser = argparse.ArgumentParser(description='Simple training script for training a RetinaNet network.')
 
-	parser.add_argument('--dataset', help='Dataset type, must be one of csv or coco.')
-	parser.add_argument('--coco_path', help='Path to COCO directory')
-	parser.add_argument('--csv_classes', help='Path to file containing class list (see readme)')
-	parser.add_argument('--csv_val', help='Path to file containing validation annotations (optional, see readme)')
+	parser.add_argument('--dataset', help='Dataset type, must be OpenImages.')
 
 	parser.add_argument('--oi_path', help='Path to OpenImages directory')
 	parser.add_argument('--oi_classes', help='List of classes')
@@ -30,16 +27,13 @@ def main(args=None):
 
 	parser = parser.parse_args(args)
 
-	if parser.dataset == 'csv':
-		dataset_val = CSVDataset(train_file=parser.csv_train, class_list=parser.csv_classes,
-								 transform=transforms.Compose([Normalizer(), Resizer()]))
-	elif parser.dataset == 'openImages':
+	if parser.dataset == 'openImages':
 		dataset_val = OpenImagesDataset(root_dir=parser.oi_path, data_dir="test",
 										class_file_path="metadata/class-descriptions-boxable.csv",
 										class_list=parser.oi_classes,
 										transform=transforms.Compose([Normalizer(), Resizer()]))
 	else:
-		raise ValueError('Dataset type not understood (must be csv or coco), exiting.')
+		raise ValueError('Dataset type not understood (must be Open Images), exiting.')
 
 	sampler_val = AspectRatioBasedSampler(dataset_val, batch_size=1, drop_last=False)
 	dataloader_val = DataLoader(dataset_val, num_workers=1, collate_fn=collater, batch_sampler=sampler_val)

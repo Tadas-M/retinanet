@@ -33,6 +33,9 @@ def main(args=None):
     parser.add_argument('--oi_classes', help='List of classes')
     parser.add_argument('--oi_class_file', help='List of classes')
 
+    parser.add_argument('--pretrained')
+    parser.add_argument('--path_to_weights')
+
     parser.add_argument('--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
     parser.add_argument('--epochs', help='Number of epochs', type=int, default=100)
 
@@ -108,6 +111,9 @@ def main(args=None):
         retinanet = model.resnet152(num_classes=dataset_train.num_classes(), pretrained=True)
     else:
         raise ValueError('Unsupported model depth, must be one of 18, 34, 50, 101, 152')
+
+    if parser.pretrained:
+        retinanet.load_state_dict(torch.load(parser.path_to_weights))
 
     use_gpu = True
 

@@ -30,6 +30,9 @@ def main(args=None):
     parser.add_argument('--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
     parser.add_argument('--epochs', help='Number of epochs', type=int, default=100)
 
+    parser.add_argument('--pretrained')
+    parser.add_argument('--path_to_weights')
+
     parser = parser.parse_args(args)
 
     if parser.dataset == 'openImages':
@@ -75,6 +78,9 @@ def main(args=None):
         raise ValueError('Unsupported model depth, must be one of 18, 34, 50, 101, 152')
 
     use_gpu = True
+
+    if parser.pretrained:
+        retinanet.load_state_dict(torch.load(parser.path_to_weights))
 
     if use_gpu:
         if torch.cuda.is_available():

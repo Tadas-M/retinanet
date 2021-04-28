@@ -38,7 +38,12 @@ def main(args=None):
 	sampler_val = AspectRatioBasedSampler(dataset_val, batch_size=1, drop_last=False)
 	dataloader_val = DataLoader(dataset_val, num_workers=1, collate_fn=collater, batch_sampler=sampler_val)
 
-	retinanet = torch.load(parser.model)
+	if torch.cuda.is_available():
+		map_location = lambda storage, loc: storage.cuda()
+	else:
+		map_location = 'cpu'
+
+	retinanet = torch.load(parser.model, map_location=map_location)
 
 	use_gpu = True
 

@@ -72,6 +72,7 @@ def generate_anchors(base_size=16, ratios=None, scales=None):
 
     return anchors
 
+
 def compute_shape(image_shape, pyramid_levels):
     """Compute shapes based on pyramid levels.
 

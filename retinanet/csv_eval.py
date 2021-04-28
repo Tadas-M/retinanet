@@ -15,14 +15,22 @@ def compute_overlap(a, b):
     -------
     overlaps: (N, K) ndarray of overlap between boxes and query_boxes
     """
+    # labels: x2-x1 * y2-y1
     area = (b[:, 2] - b[:, 0]) * (b[:, 3] - b[:, 1])
+    # result = [
+    # [area],
+    # [area]
+    # ]
 
+    # minimum x2 - maximum x1
     iw = np.minimum(np.expand_dims(a[:, 2], axis=1), b[:, 2]) - np.maximum(np.expand_dims(a[:, 0], 1), b[:, 0])
+    # minimum y2 - maximum y1
     ih = np.minimum(np.expand_dims(a[:, 3], axis=1), b[:, 3]) - np.maximum(np.expand_dims(a[:, 1], 1), b[:, 1])
 
+    # maximum or 0
     iw = np.maximum(iw, 0)
     ih = np.maximum(ih, 0)
-
+    # detection x2-x1 * y2-y1 + area - iw * ih
     ua = np.expand_dims((a[:, 2] - a[:, 0]) * (a[:, 3] - a[:, 1]), axis=1) + area - iw * ih
 
     ua = np.maximum(ua, np.finfo(float).eps)

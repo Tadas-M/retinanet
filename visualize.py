@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import datasets, models, transforms
 
-from retinanet.dataloader import CSVDataset, OpenImagesDataset, collater, Resizer, \
+from retinanet.dataloader import OpenImagesDataset, collater, Resizer, \
 	AspectRatioBasedSampler, Augmenter, UnNormalizer, Normalizer
 
 assert torch.__version__.split('.')[0] == '1'

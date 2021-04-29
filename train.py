@@ -1,8 +1,6 @@
 import argparse
 import collections
-
 import numpy as np
-
 import torch
 import torch.optim as optim
 from torchvision import transforms
@@ -17,6 +15,12 @@ assert torch.__version__.split('.')[0] == '1'
 
 print('CUDA available: {}'.format(torch.cuda.is_available()))
 
+# Learning parameters
+batch_size = 4  # batch size
+workers = 3  # number of workers for loading data in the DataLoader
+lr = 1e-5  # learning rate
+patience = 3  # learning rate patience
+
 
 def main(args=None):
     parser = argparse.ArgumentParser(description='Simple training script for training a RetinaNet network.')
@@ -30,8 +34,7 @@ def main(args=None):
     parser.add_argument('--depth', help='Resnet depth, must be one of 18, 34, 50, 101, 152', type=int, default=50)
     parser.add_argument('--epochs', help='Number of epochs', type=int, default=100)
 
-    parser.add_argument('--pretrained')
-    parser.add_argument('--path_to_weights')
+    parser.add_argument('--path_to_weights', default=None)
 
     parser = parser.parse_args(args)
 
@@ -56,12 +59,12 @@ def main(args=None):
     else:
         raise ValueError('Dataset type not understood (must be OpenImages), exiting.')
 
-    sampler = AspectRatioBasedSampler(dataset_train, batch_size=2, drop_last=False)
-    dataloader_train = DataLoader(dataset_train, num_workers=3, collate_fn=collater, batch_sampler=sampler)
+    sampler = AspectRatioBasedSampler(dataset_train, batch_size=batch_size, drop_last=False)
+    dataloader_train = DataLoader(dataset_train, num_workers=workers, collate_fn=collater, batch_sampler=sampler)
 
-    if dataset_val is not None:
-        sampler_val = AspectRatioBasedSampler(dataset_val, batch_size=1, drop_last=False)
-        dataloader_val = DataLoader(dataset_val, num_workers=3, collate_fn=collater, batch_sampler=sampler_val)
+    # if dataset_val is not None:
+        # sampler_val = AspectRatioBasedSampler(dataset_val, batch_size=1, drop_last=False)
+        # dataloader_val = DataLoader(dataset_val, num_workers=3, collate_fn=collater, batch_sampler=sampler_val)
 
     # Create the model
     if parser.depth == 18:
@@ -79,7 +82,7 @@ def main(args=None):
 
     use_gpu = True
 
-    if parser.pretrained:
+    if parser.path_to_weights is not None:
         retinanet.load_state_dict(torch.load(parser.path_to_weights))
 
     if use_gpu:
@@ -93,8 +96,8 @@ def main(args=None):
 
     retinanet.training = True
 
-    optimizer = optim.Adam(retinanet.parameters(), lr=1e-5)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=3, verbose=True)
+    optimizer = optim.Adam(retinanet.parameters(), lr=lr)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=patience, verbose=True)
 
     loss_hist = collections.deque(maxlen=500)
 

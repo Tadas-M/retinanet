@@ -26,7 +26,12 @@ def main(args=None):
                                     transform=transforms.Compose([Normalizer(), Resizer()]))
 
     # Create the model
-    retinanet = model.resnet50(num_classes=dataset_val.num_classes(), pretrained=True)
+    if torch.cuda.is_available():
+        map_location = lambda storage, loc: storage.cuda()
+    else:
+        map_location = 'cpu'
+
+    retinanet = torch.load(parser.model_path, map_location=map_location)  #model.resnet50(num_classes=dataset_val.num_classes(), pretrained=True)
 
     use_gpu = True
 
@@ -35,10 +40,12 @@ def main(args=None):
             retinanet = retinanet.cuda()
 
     if torch.cuda.is_available():
-        retinanet.load_state_dict(torch.load(parser.model_path).module.state_dict())
+        map_location = lambda storage, loc: storage.cuda()
+        retinanet.load_state_dict(torch.load(parser.model_path, map_location=map_location).module.state_dict())
         retinanet = torch.nn.DataParallel(retinanet).cuda()
     else:
-        retinanet.load_state_dict(torch.load(parser.model_path))
+        map_location = 'cpu'
+        #retinanet.load_state_dict(torch.load(parser.model_path, map_location=map_location))
         retinanet = torch.nn.DataParallel(retinanet)
 
     retinanet.training = False
